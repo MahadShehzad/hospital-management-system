@@ -1,0 +1,118 @@
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+  <div>
+    <h1 class="h4 mb-0">Find a Doctor</h1>
+    <p class="text-secondary small mb-0">Search by name, department, rating or availability.</p>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form [formGroup]="form" class="row g-3">
+      <div class="col-12 col-md-4">
+        <label class="form-label small text-secondary">Search</label>
+        <input class="form-control" formControlName="search" placeholder="Name or specialization" />
+      </div>
+      <div class="col-6 col-md-3">
+        <label class="form-label small text-secondary">Department</label>
+        <select class="form-select" formControlName="departmentId">
+          <option [ngValue]="null">All departments</option>
+          @for (d of departments(); track d.id) {
+            <option [ngValue]="d.id">{{ d.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small text-secondary">Min rating</label>
+        <select class="form-select" formControlName="minRating">
+          <option [ngValue]="null">Any</option>
+          <option [ngValue]="3">3+</option>
+          <option [ngValue]="4">4+</option>
+          <option [ngValue]="4.5">4.5+</option>
+        </select>
+      </div>
+      <div class="col-8 col-md-2">
+        <label class="form-label small text-secondary">Available on</label>
+        <div class="input-group">
+          <input
+            class="form-control"
+            placeholder="yyyy-mm-dd"
+            formControlName="availableOn"
+            ngbDatepicker
+            #picker="ngbDatepicker"
+            [minDate]="today"
+          />
+          <button class="btn btn-outline-secondary" type="button" (click)="picker.toggle()">
+            <i class="bi bi-calendar3"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-4 col-md-1 d-flex align-items-end">
+        <button class="btn btn-outline-secondary w-100" type="button" (click)="reset()">Clear</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@if (loading()) {
+  <app-loader label="Searching doctors…" />
+} @else if (error()) {
+  <app-empty-state icon="bi-exclamation-triangle" title="Could not load doctors" [message]="error()!" />
+} @else if (!result()) {
+  <app-loader label="Loading doctors…" />
+} @else if (result()!.items.length === 0) {
+  <app-empty-state
+    icon="bi-person-x"
+    title="No doctors match your filters"
+    message="Try widening your search or picking another date."
+  />
+} @else {
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+    @for (doc of result()!.items; track doc.id) {
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h2 class="h6 mb-0">{{ doc.fullName }}</h2>
+                <p class="small text-primary mb-1">{{ doc.specialization }}</p>
+              </div>
+              <span class="badge text-bg-light border">
+                <i class="bi bi-star-fill text-warning"></i>
+                {{ doc.ratingAvg | number: '1.1-1' }}
+              </span>
+            </div>
+            <ul class="list-unstyled small text-secondary mb-2">
+              <li><i class="bi bi-hospital me-1"></i>{{ doc.departmentName }}</li>
+              <li><i class="bi bi-briefcase me-1"></i>{{ doc.experienceYears }} yrs experience</li>
+            </ul>
+            <div class="small border rounded p-2 mb-3 bg-light">
+              <div class="fw-semibold text-body mb-1"><i class="bi bi-cash-coin me-1"></i>Fees</div>
+              <div class="d-flex justify-content-between"><span>Check-up</span><span class="fw-semibold">Rs {{ doc.fees.consultation | number }}</span></div>
+              <div class="d-flex justify-content-between"><span>Follow-up</span><span>Rs {{ doc.fees.followUp | number }}</span></div>
+              <div class="d-flex justify-content-between"><span>Procedure</span><span>Rs {{ doc.fees.procedure | number }}</span></div>
+              <div class="d-flex justify-content-between"><span>Major operation</span><span>Rs {{ doc.fees.surgery | number }}</span></div>
+            </div>
+            @if (doc.bio) {
+              <p class="small text-body-secondary flex-grow-1">{{ doc.bio }}</p>
+            }
+            <a class="btn btn-primary mt-auto" [routerLink]="['/patient/book', doc.id]">
+              <i class="bi bi-calendar-plus me-1"></i> Book appointment
+            </a>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if ((result()?.totalPages ?? 0) > 1) {
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center flex-wrap">
+        @for (p of pages(); track p) {
+          <li class="page-item" [class.active]="p === currentPage">
+            <button class="page-link" type="button" (click)="goToPage(p)">{{ p }}</button>
+          </li>
+        }
+      </ul>
+    </nav>
+  }
+}

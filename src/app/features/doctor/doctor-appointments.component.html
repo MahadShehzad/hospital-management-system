@@ -1,0 +1,68 @@
+<h1 class="h4 mb-3">Appointments</h1>
+
+@if (loading()) {
+  <app-loader />
+} @else {
+  <ul ngbNav #nav="ngbNav" [(activeId)]="tab" class="nav-tabs mb-3">
+    <li [ngbNavItem]="'today'">
+      <button ngbNavLink>Today <span class="badge text-bg-light ms-1">{{ today().length }}</span></button>
+      <ng-template ngbNavContent>
+        <ng-container *ngTemplateOutlet="list; context: { $implicit: today() }" />
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="'upcoming'">
+      <button ngbNavLink>Upcoming <span class="badge text-bg-light ms-1">{{ upcoming().length }}</span></button>
+      <ng-template ngbNavContent>
+        <ng-container *ngTemplateOutlet="list; context: { $implicit: upcoming() }" />
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="'past'">
+      <button ngbNavLink>Past <span class="badge text-bg-light ms-1">{{ past().length }}</span></button>
+      <ng-template ngbNavContent>
+        <ng-container *ngTemplateOutlet="list; context: { $implicit: past() }" />
+      </ng-template>
+    </li>
+  </ul>
+  <div [ngbNavOutlet]="nav"></div>
+}
+
+<ng-template #list let-items>
+  @if (items.length === 0) {
+    <app-empty-state icon="bi-calendar2-x" title="Nothing here" />
+  } @else {
+    <div class="table-responsive d-none d-md-block">
+      <table class="table align-middle">
+        <thead>
+          <tr><th>When</th><th>Patient</th><th>Reason</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          @for (a of items; track a.id) {
+            <tr>
+              <td class="small">{{ a.start | date: 'EEE d MMM, h:mm a' }}</td>
+              <td>{{ a.patientName }}</td>
+              <td class="small text-secondary">{{ a.reason }}</td>
+              <td><app-status-badge [status]="a.status" /></td>
+              <td class="text-end">
+                <a class="btn btn-sm btn-outline-primary" [routerLink]="['/doctor/appointments', a.id]">Open</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="vstack gap-2 d-md-none">
+      @for (a of items; track a.id) {
+        <a class="card border-0 shadow-sm text-decoration-none text-body" [routerLink]="['/doctor/appointments', a.id]">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <span class="fw-semibold">{{ a.patientName }}</span>
+              <app-status-badge [status]="a.status" />
+            </div>
+            <div class="small text-secondary">{{ a.start | date: 'EEE d MMM, h:mm a' }}</div>
+            <div class="small">{{ a.reason }}</div>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</ng-template>

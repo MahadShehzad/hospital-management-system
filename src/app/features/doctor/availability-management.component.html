@@ -1,0 +1,98 @@
+<h1 class="h4 mb-3">Availability</h1>
+
+@if (loading()) {
+  <app-loader />
+} @else {
+  <div class="row g-4">
+    <div class="col-12 col-lg-7">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-semibold">Weekly schedule</div>
+        <div class="card-body">
+          @for (grp of grouped(); track grp.day) {
+            <div class="d-flex align-items-start gap-3 py-2 border-bottom">
+              <div class="fw-semibold" style="width:110px">{{ grp.name }}</div>
+              <div class="flex-grow-1">
+                @if (grp.windows.length === 0) {
+                  <span class="text-secondary small">Off</span>
+                } @else {
+                  <div class="d-flex flex-wrap gap-2">
+                    @for (w of grp.windows; track w.id) {
+                      <span class="badge rounded-pill d-inline-flex align-items-center gap-2"
+                        [class.text-bg-success]="w.isActive" [class.text-bg-secondary]="!w.isActive">
+                        {{ w.startTime }}–{{ w.endTime }} · {{ w.slotDurationMinutes }}m
+                        <button class="btn btn-sm btn-link p-0 text-white" (click)="toggleActive(w)" title="Toggle">
+                          <i class="bi" [class.bi-pause-circle]="w.isActive" [class.bi-play-circle]="!w.isActive"></i>
+                        </button>
+                        <button class="btn btn-sm btn-link p-0 text-white" (click)="removeWindow(w)" title="Remove">
+                          <i class="bi bi-x-circle"></i>
+                        </button>
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white fw-semibold">Add a window</div>
+        <div class="card-body">
+          <form [formGroup]="windowForm" (ngSubmit)="addWindow()" class="row g-2">
+            <div class="col-6">
+              <label class="form-label small">Day</label>
+              <select class="form-select" formControlName="dayOfWeek">
+                @for (d of days; track $index) { <option [ngValue]="$index">{{ d }}</option> }
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small">Slot length (min)</label>
+              <input type="number" class="form-control" formControlName="slotDurationMinutes" />
+            </div>
+            <div class="col-6">
+              <label class="form-label small">Start</label>
+              <input type="time" class="form-control" formControlName="startTime" />
+            </div>
+            <div class="col-6">
+              <label class="form-label small">End</label>
+              <input type="time" class="form-control" formControlName="endTime" />
+            </div>
+            @if (windowForm.errors?.['timeRange']) {
+              <div class="col-12"><small class="text-danger">End must be after start.</small></div>
+            }
+            <div class="col-12">
+              <button class="btn btn-primary w-100" type="submit" [disabled]="savingWindow()">Add window</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-semibold">Days off</div>
+        <div class="card-body">
+          <form [formGroup]="timeOffForm" (ngSubmit)="addTimeOff()" class="input-group mb-3">
+            <input type="date" class="form-control" formControlName="date" />
+            <button class="btn btn-outline-primary" type="submit">Add</button>
+          </form>
+          @if (timeOff().length === 0) {
+            <p class="small text-secondary mb-0">No upcoming days off.</p>
+          } @else {
+            <ul class="list-group list-group-flush">
+              @for (t of timeOff(); track t.id) {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ t.date | date: 'EEE, d MMM y' }}
+                    @if (!t.isOff) { <span class="small text-secondary">({{ t.startTime }}–{{ t.endTime }})</span> }
+                  </span>
+                  <button class="btn btn-sm btn-link text-danger" (click)="removeTimeOff(t)">Remove</button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

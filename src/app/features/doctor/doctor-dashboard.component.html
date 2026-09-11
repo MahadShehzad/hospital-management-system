@@ -1,0 +1,64 @@
+@if (loading()) {
+  <app-loader label="Loading dashboard…" />
+} @else if (data(); as d) {
+  <h1 class="h4 mb-1">Welcome, {{ d.doctorName }}</h1>
+  <p class="text-secondary small mb-4">Here is your day at a glance.</p>
+
+  <div class="row row-cols-2 row-cols-lg-5 g-3 mb-4">
+    <div class="col"><app-stat-card label="Today" [value]="d.todayTotal" icon="bi-calendar-day" /></div>
+    <div class="col"><app-stat-card label="Completed" [value]="d.todayCompleted" icon="bi-check2-circle" color="#387d7a" /></div>
+    <div class="col"><app-stat-card label="Pending" [value]="d.todayPending" icon="bi-hourglass-split" color="#b7791f" /></div>
+    <div class="col"><app-stat-card label="In queue" [value]="d.waitingInQueue" icon="bi-people" color="#2bc016" /></div>
+    <div class="col"><app-stat-card label="Upcoming" [value]="d.upcomingTotal" icon="bi-calendar-week" color="#395e66" /></div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-12 col-xl-7">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white fw-semibold">Today's schedule</div>
+        <div class="card-body">
+          @if (d.today.length === 0) {
+            <app-empty-state icon="bi-cup-hot" title="No appointments today" message="Enjoy the breather." />
+          } @else {
+            <div class="vstack gap-2">
+              @for (a of d.today; track a.id) {
+                <div class="d-flex justify-content-between align-items-center border rounded p-2">
+                  <div>
+                    <div class="fw-semibold">{{ a.start | date: 'shortTime' }} · {{ a.patientName }}</div>
+                    <div class="small text-secondary">{{ a.reason }}</div>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <app-status-badge [status]="a.status" />
+                    <a class="btn btn-sm btn-outline-primary" [routerLink]="['/doctor/appointments', a.id]">Open</a>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-5">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white fw-semibold">Upcoming</div>
+        <div class="card-body">
+          @if (d.upcoming.length === 0) {
+            <app-empty-state icon="bi-calendar2" title="Nothing scheduled ahead" />
+          } @else {
+            <div class="vstack gap-2">
+              @for (a of d.upcoming; track a.id) {
+                <div class="d-flex justify-content-between align-items-center small border-bottom pb-2">
+                  <span>{{ a.start | date: 'EEE d MMM, h:mm a' }}</span>
+                  <span class="text-secondary">{{ a.patientName }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <app-empty-state icon="bi-exclamation-triangle" title="Could not load the dashboard" />
+}

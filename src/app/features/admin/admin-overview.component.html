@@ -1,0 +1,64 @@
+<h1 class="h4 mb-3">Clinic Overview</h1>
+
+@if (loading()) {
+  <app-loader />
+} @else if (report(); as r) {
+  <div class="row row-cols-2 row-cols-lg-4 g-3 mb-4">
+    <div class="col"><app-stat-card label="Patients" [value]="r.totalPatients" icon="bi-people" /></div>
+    <div class="col"><app-stat-card label="Doctors" [value]="r.totalDoctors" icon="bi-clipboard2-pulse" color="#387d7a" /></div>
+    <div class="col"><app-stat-card label="Appts this month" [value]="r.appointmentsThisMonth" icon="bi-calendar-week" color="#395e66" /></div>
+    <div class="col"><app-stat-card label="Revenue (month)" [value]="'Rs ' + (r.revenueThisMonth | number)" icon="bi-cash-stack" color="#2bc016" /></div>
+    <div class="col"><app-stat-card label="Appts today" [value]="r.appointmentsToday" icon="bi-calendar-day" /></div>
+    <div class="col"><app-stat-card label="Revenue today" [value]="'Rs ' + (r.revenueToday | number)" icon="bi-coin" color="#2bc016" /></div>
+    <div class="col"><app-stat-card label="Unpaid invoices" [value]="r.unpaidInvoices" icon="bi-receipt" color="#b7791f" /></div>
+    <div class="col"><app-stat-card label="Staff" [value]="r.totalStaff" icon="bi-person-badge" color="#395e66" /></div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-12 col-xl-7">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white fw-semibold">Appointments — last 14 days</div>
+        <div class="card-body"><app-bar-chart [data]="trendData()" /></div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-5">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white fw-semibold">By status</div>
+        <div class="card-body"><app-bar-chart [data]="statusData()" color="#387d7a" /></div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-5">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white fw-semibold">Patients by department</div>
+        <div class="card-body"><app-bar-chart [data]="deptData()" color="#395e66" /></div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-7">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white fw-semibold">Doctor performance</div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr><th>Doctor</th><th class="text-center">Total</th><th class="text-center">Done</th>
+                <th class="text-center">No-show</th><th class="text-center">Rating</th><th class="text-end">Revenue</th></tr>
+            </thead>
+            <tbody>
+              @for (d of r.doctorPerformance; track d.doctorId) {
+                <tr>
+                  <td>{{ d.doctorName }}<div class="small text-secondary">{{ d.specialization }}</div></td>
+                  <td class="text-center">{{ d.totalAppointments }}</td>
+                  <td class="text-center">{{ d.completed }}</td>
+                  <td class="text-center">{{ d.noShow }}</td>
+                  <td class="text-center">{{ d.ratingAvg | number: '1.1-1' }}</td>
+                  <td class="text-end">Rs {{ d.revenue | number }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <app-loader label="Loading report…" />
+}

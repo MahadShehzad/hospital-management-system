@@ -1,0 +1,72 @@
+<h1 class="h4 mb-3">Queue Management</h1>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label small">Patient</label>
+        <app-patient-picker (picked)="patient.set($event)" />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">Doctor</label>
+        <select class="form-select" [formControl]="doctorId">
+          <option [ngValue]="null">Select doctor…</option>
+          @for (d of doctorList(); track d.id) {
+            <option [ngValue]="d.id">{{ d.fullName }} — {{ d.specialization }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-primary w-100" (click)="add()" [disabled]="adding()">
+          <i class="bi bi-plus-lg me-1"></i> Add token
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (loading()) {
+  <app-loader />
+} @else if (byDoctor().length === 0) {
+  <app-empty-state icon="bi-people" title="No one in any queue today" />
+} @else {
+  <div class="row g-3">
+    @for (grp of byDoctor(); track grp.id) {
+      <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">{{ grp.name }}</span>
+            <button class="btn btn-sm btn-outline-primary" (click)="callNext(grp.id)">Call next</button>
+          </div>
+          <ul class="list-group list-group-flush">
+            @for (e of grp.entries; track e.id) {
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                  <span class="badge text-bg-light me-2">#{{ e.tokenNumber }}</span>
+                  {{ e.patientName }}
+                  <span class="badge ms-2"
+                    [class.text-bg-warning]="e.status === 'Waiting'"
+                    [class.text-bg-primary]="e.status === 'Called' || e.status === 'InRoom'"
+                    [class.text-bg-secondary]="e.status === 'Done' || e.status === 'Skipped'">
+                    {{ e.status }}
+                  </span>
+                </span>
+                <div class="btn-group btn-group-sm">
+                  @if (e.status === 'Waiting') {
+                    <button class="btn btn-outline-primary" (click)="set(e, 'Called')">Call</button>
+                  }
+                  @if (e.status === 'Called' || e.status === 'InRoom') {
+                    <button class="btn btn-success" (click)="set(e, 'Done')">Done</button>
+                  }
+                  @if (e.status !== 'Done' && e.status !== 'Skipped') {
+                    <button class="btn btn-outline-danger" (click)="set(e, 'Skipped')">Skip</button>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    }
+  </div>
+}

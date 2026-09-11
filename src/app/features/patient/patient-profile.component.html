@@ -1,0 +1,45 @@
+<h1 class="h4 mb-3">My Profile</h1>
+
+@if (loading()) {
+  <app-loader />
+} @else if (profile(); as p) {
+  <div class="card border-0 shadow-sm" style="max-width: 640px">
+    <div class="card-body">
+      <div class="mb-3">
+        <div class="fw-semibold fs-5">{{ p.fullName }}</div>
+        <div class="small text-secondary">{{ p.email }} · {{ p.phone }}</div>
+      </div>
+      <hr />
+      <form [formGroup]="form" (ngSubmit)="save()" class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Date of birth</label>
+          <input type="date" class="form-control" formControlName="dob" [class.is-invalid]="invalid('dob')" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Gender</label>
+          <select class="form-select" formControlName="gender">
+            <option value="">—</option><option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Blood group</label>
+          <input class="form-control" formControlName="bloodGroup" placeholder="O+" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Emergency contact</label>
+          <input class="form-control" formControlName="emergencyContact" [class.is-invalid]="invalid('emergencyContact')" />
+        </div>
+        <div class="col-12">
+          <label class="form-label">Address</label>
+          <input class="form-control" formControlName="address" />
+        </div>
+        <div class="col-12">
+          <button class="btn btn-primary" type="submit" [disabled]="saving()">
+            @if (saving()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+            Save changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

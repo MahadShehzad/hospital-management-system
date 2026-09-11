@@ -1,0 +1,45 @@
+<h1 class="h4 mb-1">My Reports</h1>
+<p class="text-secondary small mb-4">
+  All lab results and reports your doctors have recorded. Filter by doctor, year or date if you need an old one.
+</p>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body">
+    <app-report-filters searchLabel="Doctor name / report title / type" (changed)="onFilters($event)" />
+  </div>
+</div>
+
+@if (loading()) {
+  <app-loader />
+} @else if (reports().length === 0) {
+  <app-empty-state icon="bi-folder2-open" title="No reports found"
+    message="Nothing matches these filters yet." />
+} @else {
+  <div class="vstack gap-2">
+    @for (r of reports(); track r.id) {
+      <div class="card border-0 shadow-sm" role="button" (click)="toggle(r.id)">
+        <div class="card-body">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge text-bg-light">{{ r.type }}</span>
+            <span class="fw-semibold">{{ r.title }}</span>
+            <span class="ms-auto small text-secondary">{{ r.reportDate | date: 'd MMM y' }}</span>
+          </div>
+          <div class="small text-secondary">
+            {{ r.doctorName }} · {{ r.doctorSpecialization }}
+          </div>
+          @if (r.summary && expanded() !== r.id) {
+            <div class="small text-truncate mt-1">{{ r.summary }}</div>
+          }
+          @if (expanded() === r.id) {
+            <hr />
+            @if (r.summary) { <p class="mb-1"><strong>Summary:</strong> {{ r.summary }}</p> }
+            @if (r.findings) {
+              <p class="mb-0" style="white-space: pre-wrap"><strong>Findings:</strong> {{ r.findings }}</p>
+            }
+            @if (!r.summary && !r.findings) { <p class="small text-secondary mb-0">No further details recorded.</p> }
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

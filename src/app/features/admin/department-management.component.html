@@ -1,0 +1,52 @@
+<h1 class="h4 mb-3">Departments</h1>
+
+<div class="row g-4">
+  <div class="col-12 col-lg-7">
+    @if (loading()) {
+      <app-loader />
+    } @else {
+      <div class="card border-0 shadow-sm">
+        <ul class="list-group list-group-flush">
+          @for (d of departments(); track d.id) {
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div>
+                <div class="fw-semibold">{{ d.name }}</div>
+                <div class="small text-secondary">{{ d.description || '—' }}</div>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary" (click)="startEdit(d)">Edit</button>
+                <button class="btn btn-outline-danger" (click)="remove(d)">Delete</button>
+              </div>
+            </li>
+          } @empty {
+            <li class="list-group-item text-secondary">No departments.</li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+
+  <div class="col-12 col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-semibold">{{ editingId() ? 'Edit department' : 'New department' }}</div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="save()">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input class="form-control" formControlName="name" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" rows="2" formControlName="description"></textarea>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">{{ editingId() ? 'Update' : 'Create' }}</button>
+            @if (editingId()) {
+              <button class="btn btn-outline-secondary" type="button" (click)="cancel()">Cancel</button>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

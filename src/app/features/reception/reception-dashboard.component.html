@@ -1,0 +1,43 @@
+@if (loading()) {
+  <app-loader />
+} @else if (data(); as d) {
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h1 class="h4 mb-0">Front Desk</h1><p class="text-secondary small mb-0">Today at the clinic</p></div>
+    <a routerLink="/reception/register" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i> New patient</a>
+  </div>
+
+  <div class="row row-cols-2 row-cols-lg-5 g-3 mb-4">
+    <div class="col"><app-stat-card label="Appointments" [value]="d.todayAppointments" icon="bi-calendar-day" /></div>
+    <div class="col"><app-stat-card label="Checked in" [value]="d.todayCheckedIn" icon="bi-check2-circle" color="#387d7a" /></div>
+    <div class="col"><app-stat-card label="In queue" [value]="d.waitingInQueue" icon="bi-people" color="#2bc016" /></div>
+    <div class="col"><app-stat-card label="Unpaid bills" [value]="d.unpaidInvoices" icon="bi-receipt" color="#b7791f" /></div>
+    <div class="col"><app-stat-card label="Revenue today" [value]="'Rs ' + (d.todayRevenue | number)" icon="bi-cash-stack" color="#395e66" /></div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white fw-semibold">Today's schedule</div>
+    <div class="card-body">
+      @if (d.todaySchedule.length === 0) {
+        <app-empty-state icon="bi-calendar2-x" title="No appointments today" />
+      } @else {
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead><tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th></tr></thead>
+            <tbody>
+              @for (a of d.todaySchedule; track a.id) {
+                <tr>
+                  <td class="small">{{ a.start | date: 'shortTime' }}</td>
+                  <td>{{ a.patientName }}</td>
+                  <td class="small text-secondary">{{ a.doctorName }} · {{ a.specialization }}</td>
+                  <td><app-status-badge [status]="a.status" /></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+} @else {
+  <app-empty-state icon="bi-exclamation-triangle" title="Could not load the dashboard" />
+}

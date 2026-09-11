@@ -1,0 +1,186 @@
+// ── Hospital Management System — global theme ────────────────────────────────
+// Brand palette: 32936f / 26a96c / 395e66 / 2bc016 / 387d7a
+
+@use "sass:map";
+
+// 1. Bootstrap functions (needed before variable overrides)
+@import "bootstrap/scss/functions";
+
+// 2. Brand variable overrides
+$primary:   #32936f;
+$secondary: #395e66;
+$success:   #2bc016;
+$info:      #387d7a;
+$teal:      #26a96c;
+
+$body-bg:          #f4f7f6;
+$body-color:       #1f2d2b;
+$border-radius:    .5rem;
+$border-radius-sm: .35rem;
+$border-radius-lg: .75rem;
+$link-decoration:  none;
+
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+$enable-negative-margins: true;
+
+// 3. Bootstrap core
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+// Extra theme colour available as .bg-brand / .text-brand
+$custom-colors: ("brand": $teal);
+$theme-colors: map.merge($theme-colors, $custom-colors);
+
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/images";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/tables";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/button-group";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/card";
+@import "bootstrap/scss/accordion";
+@import "bootstrap/scss/breadcrumb";
+@import "bootstrap/scss/pagination";
+@import "bootstrap/scss/badge";
+@import "bootstrap/scss/alert";
+@import "bootstrap/scss/progress";
+@import "bootstrap/scss/list-group";
+@import "bootstrap/scss/close";
+@import "bootstrap/scss/toasts";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/tooltip";
+@import "bootstrap/scss/popover";
+@import "bootstrap/scss/spinners";
+@import "bootstrap/scss/offcanvas";
+@import "bootstrap/scss/placeholders";
+@import "bootstrap/scss/helpers";
+@import "bootstrap/scss/utilities/api";
+
+// 4. Icons
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+// ── App-level tokens & helpers ──────────────────────────────────────────────
+:root {
+  --app-sidebar-width: 250px;
+  --app-status-pending:   #b7791f;
+  --app-status-confirmed: #{$primary};
+  --app-status-completed: #{$info};
+  --app-status-cancelled: #9aa5a3;
+  --app-status-noshow:    #c0392b;
+}
+
+html, body { min-height: 100%; }
+body { -webkit-font-smoothing: antialiased; }
+
+.app-brand-gradient {
+  background: linear-gradient(135deg, #32936f 0%, #387d7a 55%, #395e66 100%);
+}
+
+// Status badge colours
+.status-badge {
+  font-weight: 600;
+  letter-spacing: .02em;
+  &--pending   { background: var(--app-status-pending)   !important; }
+  &--confirmed { background: var(--app-status-confirmed) !important; }
+  &--completed { background: var(--app-status-completed) !important; }
+  &--cancelled { background: var(--app-status-cancelled) !important; }
+  &--noshow    { background: var(--app-status-noshow)    !important; }
+}
+
+// FullCalendar theming (loaded per-component, styled globally)
+.fc {
+  --fc-border-color: #{$border-color};
+  --fc-today-bg-color: rgba(50, 147, 111, .08);
+  --fc-button-bg-color: #{$primary};
+  --fc-button-border-color: #{$primary};
+  --fc-button-hover-bg-color: #2a7d5e;
+  --fc-button-hover-border-color: #2a7d5e;
+  --fc-button-active-bg-color: #256b51;
+  font-size: .85rem;
+}
+.fc .fc-slot-open {
+  background: rgba(43, 192, 22, .12);
+  cursor: pointer;
+}
+.fc .fc-slot-open:hover { background: rgba(43, 192, 22, .25); }
+
+// Simple slot picker
+.slot-picker {
+  .slot-day {
+    width: 76px;
+    padding: .5rem .25rem;
+    border-radius: .6rem;
+  }
+  .slot-time {
+    min-width: 92px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ── App shell layout ───────────────────────────────────────────────────────
+$navbar-h: 58px;
+
+nav.navbar.app-brand-gradient {
+  min-height: $navbar-h;
+}
+
+.app-shell {
+  display: flex;
+  align-items: flex-start;
+  min-height: calc(100vh - #{$navbar-h});
+}
+
+.app-main {
+  flex: 1 1 auto;
+  min-width: 0;            // lets flex children (tables, calendars) shrink instead of overflowing
+  padding: 1rem;
+  @media (min-width: 768px) { padding: 1.5rem; }
+}
+
+.app-sidebar {
+  // mobile: off-canvas drawer
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 260px;
+  max-width: 82vw;
+  z-index: 1046;
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform .2s ease;
+
+  &--open { transform: translateX(0); }
+}
+
+.app-shell__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .4);
+  z-index: 1045;
+}
+
+@media (min-width: 992px) {
+  .app-sidebar {
+    position: sticky;
+    top: $navbar-h;
+    height: calc(100vh - #{$navbar-h});
+    transform: none;
+    flex: 0 0 var(--app-sidebar-width);
+    width: var(--app-sidebar-width);
+  }
+  .app-shell__backdrop { display: none; }
+}

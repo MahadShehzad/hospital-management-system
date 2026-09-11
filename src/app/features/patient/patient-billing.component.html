@@ -1,0 +1,36 @@
+<h1 class="h4 mb-1">Billing</h1>
+<p class="text-secondary small mb-4">Invoices and payment history.</p>
+
+@if (loading()) {
+  <app-loader />
+} @else if (invoices().length === 0) {
+  <app-empty-state icon="bi-receipt" title="No invoices yet" />
+} @else {
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead><tr><th>Number</th><th>Date</th><th class="text-end">Total</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          @for (inv of invoices(); track inv.id) {
+            <tr>
+              <td class="fw-semibold">{{ inv.number }}</td>
+              <td class="small text-secondary">{{ inv.issuedAt | date: 'd MMM y' }}</td>
+              <td class="text-end">Rs {{ inv.total | number: '1.0-2' }}</td>
+              <td>
+                <span class="badge"
+                  [class.text-bg-warning]="inv.status === 'Unpaid'"
+                  [class.text-bg-success]="inv.status === 'Paid'"
+                  [class.text-bg-secondary]="inv.status === 'Void'">{{ inv.status }}</span>
+              </td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary" (click)="download(inv)">
+                  <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

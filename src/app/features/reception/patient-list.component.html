@@ -1,0 +1,39 @@
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h4 mb-0">Patients</h1>
+  <a routerLink="/reception/register" class="btn btn-primary btn-sm">
+    <i class="bi bi-person-plus me-1"></i> Register patient
+  </a>
+</div>
+
+<div class="input-group mb-3" style="max-width: 420px">
+  <span class="input-group-text"><i class="bi bi-search"></i></span>
+  <input class="form-control" [formControl]="search" placeholder="Search by name, phone or email" />
+</div>
+
+@if (loading()) {
+  <app-loader />
+} @else if (patients().length === 0) {
+  <app-empty-state icon="bi-people" title="No patients found"
+    message="Register a new patient or adjust your search." />
+} @else {
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead><tr><th>Name</th><th>Phone</th><th>Age</th><th>Gender</th><th></th></tr></thead>
+        <tbody>
+          @for (p of patients(); track p.patientId) {
+            <tr>
+              <td class="fw-semibold">{{ p.fullName }}</td>
+              <td class="small text-secondary">{{ p.phone }}</td>
+              <td>{{ p.age ?? '—' }}</td>
+              <td>{{ p.gender ?? '—' }}</td>
+              <td class="text-end">
+                <a class="btn btn-sm btn-outline-primary" [routerLink]="['/reception/schedule']">Book</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

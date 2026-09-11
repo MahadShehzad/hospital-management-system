@@ -1,0 +1,46 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Staff</h1>
+  <button class="btn btn-primary btn-sm" (click)="add()"><i class="bi bi-plus-lg me-1"></i> Add staff</button>
+</div>
+
+@if (loading()) {
+  <app-loader />
+} @else if (staff().length === 0) {
+  <app-empty-state icon="bi-person-badge" title="No staff yet" />
+} @else {
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr><th>Name</th><th>Role</th><th>Department</th><th>Contact</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          @for (s of staff(); track s.userId) {
+            <tr [class.opacity-50]="!s.isActive">
+              <td>
+                <div class="fw-semibold">{{ s.fullName }}</div>
+                @if (s.specialization) { <div class="small text-secondary">{{ s.specialization }}</div> }
+              </td>
+              <td><span class="badge text-bg-light">{{ s.role }}</span></td>
+              <td class="small">{{ s.departmentName || '—' }}</td>
+              <td class="small text-secondary">{{ s.email }}<br />{{ s.phone }}</td>
+              <td>
+                <span class="badge" [class.text-bg-success]="s.isActive" [class.text-bg-secondary]="!s.isActive">
+                  {{ s.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="text-end">
+                <div class="btn-group btn-group-sm">
+                  <button class="btn btn-outline-primary" (click)="edit(s)">Edit</button>
+                  <button class="btn btn-outline-secondary" (click)="toggleActive(s)">
+                    {{ s.isActive ? 'Deactivate' : 'Activate' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

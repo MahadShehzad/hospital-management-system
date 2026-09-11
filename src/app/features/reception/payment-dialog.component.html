@@ -1,0 +1,82 @@
+<div class="modal-header">
+  <h5 class="modal-title">Record payment</h5>
+  <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <div class="d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+    <span class="text-secondary small">{{ invoice.number }} · {{ invoice.patientName }}</span>
+    <span class="fs-5 fw-bold text-primary">Rs {{ invoice.total | number: '1.0-2' }}</span>
+  </div>
+
+  <label class="form-label small text-secondary">Payment method</label>
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    @for (m of methods; track m.value) {
+      <button
+        type="button"
+        class="btn"
+        [class.btn-primary]="method() === m.value"
+        [class.btn-outline-secondary]="method() !== m.value"
+        (click)="pick(m.value)"
+      >
+        <i class="bi me-1" [class]="m.icon"></i>{{ m.label }}
+      </button>
+    }
+  </div>
+
+  <form [formGroup]="form" class="row g-3">
+    @if (showCard()) {
+      <div class="col-8">
+        <label class="form-label">Card holder name</label>
+        <input class="form-control" formControlName="cardHolder" />
+      </div>
+      <div class="col-4">
+        <label class="form-label">Last 4 digits</label>
+        <input class="form-control" maxlength="4" formControlName="cardLast4"
+          [class.is-invalid]="form.controls.cardLast4.errors" />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Authorization / transaction code</label>
+        <input class="form-control" formControlName="reference" />
+      </div>
+    }
+    @if (showBank()) {
+      <div class="col-6">
+        <label class="form-label">Bank name</label>
+        <input class="form-control" formControlName="bankName"
+          [class.is-invalid]="form.controls.bankName.errors" />
+      </div>
+      <div class="col-6">
+        <label class="form-label">Account title</label>
+        <input class="form-control" formControlName="accountName" />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Transaction reference</label>
+        <input class="form-control" formControlName="reference"
+          [class.is-invalid]="form.controls.reference.errors" />
+      </div>
+    }
+    @if (showMobile()) {
+      <div class="col-6">
+        <label class="form-label">{{ method() }} mobile number</label>
+        <input class="form-control" placeholder="03XX-XXXXXXX" formControlName="mobileNumber"
+          [class.is-invalid]="form.controls.mobileNumber.errors" />
+      </div>
+      <div class="col-6">
+        <label class="form-label">Transaction ID (TID)</label>
+        <input class="form-control" formControlName="reference"
+          [class.is-invalid]="form.controls.reference.errors" />
+      </div>
+    }
+    @if (method() === 'Cash') {
+      <div class="col-12">
+        <p class="text-secondary small mb-0">Cash received in full at the front desk.</p>
+      </div>
+    }
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+  <button class="btn btn-success" (click)="submit()" [disabled]="saving()">
+    <i class="bi bi-check2-circle me-1"></i> Mark paid — Rs {{ invoice.total | number: '1.0-2' }}
+  </button>
+</div>

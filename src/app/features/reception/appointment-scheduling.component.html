@@ -1,0 +1,69 @@
+<h1 class="h4 mb-3">Book Appointment</h1>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-5">
+        <label class="form-label small">Patient</label>
+        <app-patient-picker (picked)="patient.set($event)" />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">Doctor</label>
+        <select class="form-select" [formControl]="doctorId">
+          <option [ngValue]="null">Select doctor…</option>
+          @for (d of doctorList(); track d.id) {
+            <option [ngValue]="d.id">{{ d.fullName }} — {{ d.specialization }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">Reason</label>
+        <input class="form-control" [formControl]="reason" placeholder="Consultation" />
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (doctorId.value && patient()) {
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <app-slot-picker
+        [slots]="slots()"
+        [loading]="slotsLoading() || booking()"
+        (slotSelected)="book($event)"
+        (rangeChanged)="loadRange($event)"
+      />
+    </div>
+  </div>
+} @else {
+  <p class="text-secondary">Pick a patient and a doctor to see open slots.</p>
+}
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white fw-semibold">
+    Upcoming booked appointments
+    <span class="badge text-bg-light ms-1">{{ booked().length }}</span>
+  </div>
+  <div class="card-body p-0">
+    @if (booked().length === 0) {
+      <p class="text-secondary small p-3 mb-0">No upcoming appointments booked.</p>
+    } @else {
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead><tr><th>When</th><th>Patient</th><th>Doctor</th><th>Reason</th><th>Status</th></tr></thead>
+          <tbody>
+            @for (a of booked(); track a.id) {
+              <tr>
+                <td class="small">{{ a.start | date: 'EEE d MMM, h:mm a' }}</td>
+                <td>{{ a.patientName }}</td>
+                <td class="small text-secondary">{{ a.doctorName }}</td>
+                <td class="small">{{ a.reason }}</td>
+                <td><app-status-badge [status]="a.status" /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

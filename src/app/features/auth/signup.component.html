@@ -1,0 +1,83 @@
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-4">
+    <h2 class="h4 mb-1">Create your account</h2>
+    <p class="text-secondary small mb-4">Patients can self-register. Staff accounts are created by an admin.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="fullName">Full name</label>
+        <input id="fullName" class="form-control" formControlName="fullName"
+               [class.is-invalid]="invalid('fullName')" />
+        <div class="invalid-feedback">Enter your full name (3+ characters).</div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-sm-7 mb-3">
+          <label class="form-label" for="email">Email</label>
+          <input id="email" type="email" class="form-control" formControlName="email"
+                 autocomplete="email" [class.is-invalid]="invalid('email')" />
+          <div class="invalid-feedback">Enter a valid email address.</div>
+        </div>
+        <div class="col-sm-5 mb-3">
+          <label class="form-label" for="phone">Phone</label>
+          <input id="phone" class="form-control" formControlName="phone"
+                 placeholder="03XX-XXXXXXX" [class.is-invalid]="invalid('phone')" />
+          <div class="invalid-feedback">Use a valid PK mobile number.</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="password">Password</label>
+        <div class="input-group has-validation">
+          <input id="password" [type]="showPassword() ? 'text' : 'password'" class="form-control border-end-0"
+                 formControlName="password"
+                 autocomplete="new-password" [class.is-invalid]="invalid('password')" />
+          <button type="button" class="btn btn-outline-secondary border-start-0"
+                  [class.is-invalid]="invalid('password')"
+                  [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+                  (click)="showPassword.set(!showPassword())">
+            <i class="bi" [class.bi-eye]="!showPassword()" [class.bi-eye-slash]="showPassword()"></i>
+          </button>
+        </div>
+        @if (invalid('password') && passwordErrors) {
+          <ul class="list-unstyled small text-danger mt-1 mb-0">
+            @if (passwordErrors['minlength']) { <li>• At least 8 characters</li> }
+            @if (passwordErrors['lowercase']) { <li>• One lowercase letter</li> }
+            @if (passwordErrors['uppercase']) { <li>• One uppercase letter</li> }
+            @if (passwordErrors['digit']) { <li>• One number</li> }
+          </ul>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="confirmPassword">Confirm password</label>
+        <div class="input-group has-validation">
+          <input id="confirmPassword" [type]="showConfirmPassword() ? 'text' : 'password'"
+                 class="form-control border-end-0"
+                 formControlName="confirmPassword" autocomplete="new-password"
+                 [class.is-invalid]="invalid('confirmPassword') || mismatch" />
+          <button type="button" class="btn btn-outline-secondary border-start-0"
+                  [class.is-invalid]="invalid('confirmPassword') || mismatch"
+                  [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'"
+                  (click)="showConfirmPassword.set(!showConfirmPassword())">
+            <i class="bi" [class.bi-eye]="!showConfirmPassword()" [class.bi-eye-slash]="showConfirmPassword()"></i>
+          </button>
+          <div class="invalid-feedback">
+            @if (mismatch) { Passwords do not match. } @else { Please confirm your password. }
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary w-100" type="submit" [disabled]="status() === 'loading'">
+        @if (status() === 'loading') {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+        }
+        Create account
+      </button>
+    </form>
+
+    <p class="text-center small text-secondary mt-4 mb-0">
+      Already registered? <a routerLink="/auth/login">Sign in</a>
+    </p>
+  </div>
+</div>

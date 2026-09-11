@@ -1,0 +1,76 @@
+<h1 class="h4 mb-3">Register Patient</h1>
+
+@if (created(); as c) {
+  <div class="card border-0 shadow-sm" style="max-width: 640px">
+    <div class="card-body">
+      <div class="text-center mb-3">
+        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+        <h2 class="h5 mt-2">{{ c.patient.fullName }} registered</h2>
+      </div>
+      <table class="table table-sm">
+        <tbody>
+          <tr><th>Patient ID</th><td>{{ c.patient.patientId }}</td></tr>
+          <tr><th>Email</th><td>{{ c.patient.email }}</td></tr>
+          <tr><th>Phone</th><td>{{ c.patient.phone }}</td></tr>
+          <tr>
+            <th>Temporary password</th>
+            <td><code class="fs-6">{{ c.temporaryPassword }}</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small text-secondary">
+        Share these credentials with the patient. They can sign in and change details from their profile.
+      </p>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" (click)="reset()">Register another</button>
+        <a class="btn btn-outline-secondary" routerLink="/reception/schedule">Book an appointment</a>
+      </div>
+    </div>
+  </div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="submit()" class="card border-0 shadow-sm" style="max-width: 720px" novalidate>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Full name *</label>
+          <input class="form-control" formControlName="fullName" [class.is-invalid]="invalid('fullName')" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone *</label>
+          <input class="form-control" formControlName="phone" placeholder="03XX-XXXXXXX" [class.is-invalid]="invalid('phone')" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Email *</label>
+          <input type="email" class="form-control" formControlName="email" [class.is-invalid]="invalid('email')" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Date of birth</label>
+          <input type="date" class="form-control" formControlName="dob" [class.is-invalid]="invalid('dob')" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Gender</label>
+          <select class="form-select" formControlName="gender">
+            <option value="">—</option>
+            <option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Blood group</label>
+          <input class="form-control" formControlName="bloodGroup" placeholder="O+" />
+        </div>
+        <div class="col-md-5">
+          <label class="form-label">Emergency contact</label>
+          <input class="form-control" formControlName="emergencyContact" [class.is-invalid]="invalid('emergencyContact')" />
+        </div>
+        <div class="col-12">
+          <label class="form-label">Address</label>
+          <input class="form-control" formControlName="address" />
+        </div>
+      </div>
+      <button class="btn btn-primary mt-4" type="submit" [disabled]="saving()">
+        @if (saving()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+        Register patient
+      </button>
+    </div>
+  </form>
+}

@@ -1,0 +1,69 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-0">Today's Queue</h1>
+    <p class="text-secondary small mb-0">Auto-refreshes every 15s.</p>
+  </div>
+  <button class="btn btn-primary" (click)="callNext()">
+    <i class="bi bi-megaphone me-1"></i> Call next
+  </button>
+</div>
+
+@if (loading()) {
+  <app-loader />
+} @else if (entries().length === 0) {
+  <app-empty-state icon="bi-people" title="Queue is empty" message="Reception can add walk-in patients to your queue." />
+} @else {
+  <div class="row g-3">
+    <div class="col-12 col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-primary text-white fw-semibold">Now serving</div>
+        <div class="card-body text-center">
+          @if (current(); as c) {
+            <div class="display-4 fw-bold text-primary">#{{ c.tokenNumber }}</div>
+            <div class="fw-semibold">{{ c.patientName }}</div>
+            <div class="small text-secondary">{{ c.patientPhone }}</div>
+            <div class="btn-group btn-group-sm mt-3">
+              <button class="btn btn-outline-secondary" (click)="set(c, 'InRoom')">In room</button>
+              <button class="btn btn-success" (click)="set(c, 'Done')">Done</button>
+              <button class="btn btn-outline-danger" (click)="set(c, 'Skipped')">Skip</button>
+            </div>
+          } @else {
+            <p class="text-secondary my-4">No one is being seen right now.</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white fw-semibold">Waiting ({{ waiting().length }})</div>
+        <div class="list-group list-group-flush">
+          @for (e of waiting(); track e.id) {
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <span><span class="badge text-bg-light me-2">#{{ e.tokenNumber }}</span>{{ e.patientName }}</span>
+              <button class="btn btn-sm btn-outline-primary" (click)="set(e, 'Called')">Call</button>
+            </div>
+          } @empty {
+            <div class="list-group-item text-secondary small">No one waiting.</div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white fw-semibold">Seen ({{ done().length }})</div>
+        <div class="list-group list-group-flush">
+          @for (e of done(); track e.id) {
+            <div class="list-group-item d-flex justify-content-between align-items-center small">
+              <span><span class="badge text-bg-light me-2">#{{ e.tokenNumber }}</span>{{ e.patientName }}</span>
+              <span class="text-secondary">{{ e.calledAt | date: 'shortTime' }}</span>
+            </div>
+          } @empty {
+            <div class="list-group-item text-secondary small">Nothing yet.</div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,52 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ isEdit ? 'Edit report' : 'New patient report' }}</h5>
+  <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+</div>
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="modal-body">
+    @if (isEdit || presetPatient) {
+      <div class="mb-3">
+        <label class="form-label small text-secondary">Patient</label>
+        <div class="form-control-plaintext fw-semibold">{{ patient()?.fullName }}</div>
+      </div>
+    } @else {
+      <div class="mb-3">
+        <label class="form-label small text-secondary">Patient</label>
+        <app-patient-picker (picked)="patient.set($event)" />
+      </div>
+    }
+
+    <div class="row g-3">
+      <div class="col-md-7">
+        <label class="form-label">Title</label>
+        <input class="form-control" formControlName="title" placeholder="e.g. CBC / Chest X-ray"
+          [class.is-invalid]="invalid('title')" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Type</label>
+        <select class="form-select" formControlName="type">
+          @for (t of types; track t) { <option [value]="t">{{ t }}</option> }
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" formControlName="reportDate" />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Summary</label>
+        <textarea class="form-control" rows="2" formControlName="summary"
+          placeholder="One-line conclusion"></textarea>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Findings / details</label>
+        <textarea class="form-control" rows="4" formControlName="findings"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="submit" class="btn btn-primary" [disabled]="saving() || !patient()">
+      {{ isEdit ? 'Save' : 'Add report' }}
+    </button>
+  </div>
+</form>

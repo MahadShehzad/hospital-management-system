@@ -1,0 +1,59 @@
+<div class="slot-picker position-relative">
+  @if (loading()) {
+    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75" style="z-index:5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  <p class="text-secondary small mb-2">
+    <span class="fw-semibold text-body">Step 1.</span> Choose a day &nbsp;·&nbsp;
+    <span class="fw-semibold text-body">Step 2.</span> Tap an open time to book it
+  </p>
+
+  <!-- Day strip -->
+  <div class="d-flex gap-2 overflow-auto pb-2 mb-3">
+    @for (col of columns(); track col.date) {
+      <button
+        type="button"
+        class="btn text-center flex-shrink-0 slot-day"
+        [class.btn-primary]="col.date === selectedDate()"
+        [class.btn-outline-secondary]="col.date !== selectedDate()"
+        [class.opacity-50]="col.count === 0"
+        [disabled]="col.count === 0"
+        (click)="pick(col.date)"
+      >
+        <div class="small text-uppercase">{{ col.jsDate | date: 'EEE' }}</div>
+        <div class="fs-5 fw-bold lh-1">{{ col.jsDate | date: 'd' }}</div>
+        <div class="small">{{ col.jsDate | date: 'MMM' }}</div>
+        <div class="badge rounded-pill mt-1"
+          [class.text-bg-light]="col.date !== selectedDate()"
+          [class.text-bg-white]="col.date === selectedDate()">
+          {{ col.count ? col.count + ' open' : '—' }}
+        </div>
+      </button>
+    }
+  </div>
+
+  <!-- Time slots for the chosen day -->
+  @if (!selectedHasSlots()) {
+    <div class="text-center text-secondary py-4 border rounded">
+      <i class="bi bi-calendar-x fs-3"></i>
+      <p class="mb-0 mt-2">No open times on this day. Pick another day above.</p>
+    </div>
+  } @else {
+    @for (group of groups(); track group.label) {
+      <div class="mb-3">
+        <div class="small text-secondary text-uppercase fw-semibold mb-2">
+          <i class="bi bi-clock me-1"></i>{{ group.label }}
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          @for (slot of group.slots; track slot.start) {
+            <button type="button" class="btn btn-outline-primary slot-time" (click)="choose(slot)">
+              {{ slot.start | date: 'h:mm a' }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

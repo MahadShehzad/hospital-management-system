@@ -1,0 +1,52 @@
+<div class="modal-header">
+  <h5 class="modal-title">New invoice</h5>
+  <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="form">
+    <label class="form-label small">Patient</label>
+    <app-patient-picker (picked)="patient.set($event)" />
+
+    <label class="form-label small mt-3">Line items</label>
+    <div formArrayName="items" class="vstack gap-2 mb-2">
+      @for (item of items.controls; track $index) {
+        <div class="row g-2 align-items-center" [formGroupName]="$index">
+          <div class="col-6"><input class="form-control form-control-sm" placeholder="Description" formControlName="description" /></div>
+          <div class="col-2"><input type="number" class="form-control form-control-sm" placeholder="Qty" formControlName="quantity" /></div>
+          <div class="col-3"><input type="number" class="form-control form-control-sm" placeholder="Unit price" formControlName="unitPrice" /></div>
+          <div class="col-1 text-end">
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeLine($index)"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+      }
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-secondary mb-3" (click)="addLine()">
+      <i class="bi bi-plus-lg me-1"></i> Add line
+    </button>
+
+    <div class="row g-2">
+      <div class="col-4">
+        <label class="form-label small">Discount (Rs)</label>
+        <input type="number" class="form-control form-control-sm" formControlName="discount" />
+      </div>
+      <div class="col-4">
+        <label class="form-label small">Tax (%)</label>
+        <input type="number" class="form-control form-control-sm" formControlName="taxRate" />
+      </div>
+      <div class="col-4">
+        <label class="form-label small">Notes</label>
+        <input class="form-control form-control-sm" formControlName="notes" />
+      </div>
+    </div>
+
+    <div class="text-end mt-3 small">
+      <div>Subtotal: <strong>Rs {{ totals().subtotal | number }}</strong></div>
+      <div>Tax: <strong>Rs {{ totals().tax | number: '1.0-2' }}</strong></div>
+      <div class="fs-6">Total: <strong class="text-primary">Rs {{ totals().total | number: '1.0-2' }}</strong></div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+  <button class="btn btn-primary" (click)="submit()" [disabled]="saving()">Create invoice</button>
+</div>

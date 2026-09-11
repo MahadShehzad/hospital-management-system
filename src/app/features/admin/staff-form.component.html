@@ -1,0 +1,87 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ isEdit ? 'Edit staff member' : 'Add staff member' }}</h5>
+  <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+</div>
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Full name</label>
+        <input class="form-control" formControlName="fullName" [class.is-invalid]="invalid('fullName')" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Phone</label>
+        <input class="form-control" formControlName="phone" [class.is-invalid]="invalid('phone')" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" formControlName="email" [class.is-invalid]="invalid('email')" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Role</label>
+        <select class="form-select" formControlName="role">
+          <option>Doctor</option><option>Receptionist</option><option>Admin</option>
+        </select>
+      </div>
+      @if (!isEdit) {
+        <div class="col-md-3">
+          <label class="form-label">Password</label>
+          <input type="text" class="form-control" formControlName="password" [class.is-invalid]="invalid('password')" />
+        </div>
+      } @else {
+        <div class="col-md-3 d-flex align-items-end">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="active" formControlName="isActive" />
+            <label class="form-check-label" for="active">Active</label>
+          </div>
+        </div>
+      }
+
+      @if (isDoctor) {
+        <div class="col-md-4">
+          <label class="form-label">Department</label>
+          <select class="form-select" formControlName="departmentId">
+            <option [ngValue]="null">—</option>
+            @for (d of departments; track d.id) { <option [ngValue]="d.id">{{ d.name }}</option> }
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Specialization</label>
+          <input class="form-control" formControlName="specialization" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Qualifications</label>
+          <input class="form-control" formControlName="qualifications" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Experience (yrs)</label>
+          <input type="number" class="form-control" formControlName="experienceYears" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Check-up fee</label>
+          <input type="number" class="form-control" formControlName="consultationFee" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Follow-up fee</label>
+          <input type="number" class="form-control" formControlName="followUpFee" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Procedure fee</label>
+          <input type="number" class="form-control" formControlName="procedureFee" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Operation fee</label>
+          <input type="number" class="form-control" formControlName="surgeryFee" />
+        </div>
+        <div class="col-12">
+          <label class="form-label">Bio</label>
+          <textarea class="form-control" rows="2" formControlName="bio"></textarea>
+        </div>
+      }
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="submit" class="btn btn-primary" [disabled]="saving()">{{ isEdit ? 'Save' : 'Create' }}</button>
+  </div>
+</form>

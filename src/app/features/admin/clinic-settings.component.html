@@ -1,0 +1,79 @@
+<h1 class="h4 mb-3">Settings</h1>
+
+@if (loading()) {
+  <app-loader />
+} @else {
+  <div class="row g-4">
+    <div class="col-12 col-lg-7">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-semibold">Clinic details</div>
+        <div class="card-body">
+          <form [formGroup]="form" (ngSubmit)="save()" class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label">Clinic name</label>
+              <input class="form-control" formControlName="clinicName" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Phone</label>
+              <input class="form-control" formControlName="phone" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input class="form-control" formControlName="email" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Address</label>
+              <input class="form-control" formControlName="address" />
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">Opens</label>
+              <input type="time" class="form-control" formControlName="openTime" />
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">Closes</label>
+              <input type="time" class="form-control" formControlName="closeTime" />
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label">Lead (hrs)</label>
+              <input type="number" class="form-control" formControlName="bookingLeadHours" />
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label">Window (days)</label>
+              <input type="number" class="form-control" formControlName="bookingWindowDays" />
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label">Tax %</label>
+              <input type="number" class="form-control" formControlName="defaultTaxRate" />
+            </div>
+            <div class="col-12">
+              <button class="btn btn-primary" type="submit" [disabled]="saving()">Save settings</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-semibold">Holidays</div>
+        <div class="card-body">
+          <form [formGroup]="holidayForm" (ngSubmit)="addHoliday()" class="row g-2 mb-3">
+            <div class="col-5"><input type="date" class="form-control form-control-sm" formControlName="date" /></div>
+            <div class="col-5"><input class="form-control form-control-sm" placeholder="Name" formControlName="name" /></div>
+            <div class="col-2"><button class="btn btn-sm btn-outline-primary w-100" type="submit">Add</button></div>
+          </form>
+          <ul class="list-group list-group-flush">
+            @for (h of holidays(); track h.id) {
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ h.date | date: 'd MMM y' }} — {{ h.name }}</span>
+                <button class="btn btn-sm btn-link text-danger" (click)="removeHoliday(h)">Remove</button>
+              </li>
+            } @empty {
+              <li class="list-group-item text-secondary small">No holidays configured.</li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+}
