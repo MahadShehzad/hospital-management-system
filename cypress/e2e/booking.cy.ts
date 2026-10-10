@@ -6,7 +6,8 @@ describe('Appointment booking (Phase 3)', () => {
     cy.get('a[href^="/patient/book/"]', { timeout: 15000 }).first().click();
 
     cy.location('pathname').should('include', '/patient/book/');
-    cy.get('.fc-slot-open', { timeout: 20000 }).first().click();
+    // The slot picker auto-selects the first day with openings; pick its first time.
+    cy.get('.slot-time', { timeout: 20000 }).first().click();
 
     cy.get('app-book-confirm', { timeout: 10000 }).within(() => {
       cy.get('#reason').type('Cypress smoke-test consultation');
