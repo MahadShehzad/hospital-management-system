@@ -5,7 +5,8 @@
     "types": ["cypress", "node"],
     "moduleResolution": "bundler",
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": ["**/*.ts"]
 }
