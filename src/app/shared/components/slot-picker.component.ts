@@ -49,6 +49,8 @@ export class SlotPickerComponent {
   readonly rangeChanged = output<SlotRange>();
 
   readonly selectedDate = signal<string | null>(null);
+  /** Set once the patient picks a day themselves, so we stop auto-selecting. */
+  private readonly userPicked = signal(false);
 
   constructor() {
     // Announce the range we want covered, once.
@@ -60,13 +62,15 @@ export class SlotPickerComponent {
       this.rangeChanged.emit({ from: localDate(from), to: localDate(to) });
     });
 
-    // Auto-select the first day that actually has slots.
+    // Auto-select the first day that actually has slots. Re-evaluated when the
+    // slots arrive, so an empty "today" (e.g. a weekend) doesn't stay selected.
     effect(() => {
       const cols = this.columns();
-      if (!this.selectedDate() || !cols.some((c) => c.date === this.selectedDate())) {
-        const firstOpen = cols.find((c) => c.count > 0) ?? cols[0];
-        if (firstOpen) this.selectedDate.set(firstOpen.date);
-      }
+      const selected = this.selectedDate();
+      const current = cols.find((c) => c.date === selected);
+      if (current && (current.count > 0 || this.userPicked())) return;
+      const target = (cols.find((c) => c.count > 0) ?? cols[0])?.date ?? null;
+      if (target !== selected) this.selectedDate.set(target);
     });
   }
 
@@ -116,6 +120,7 @@ export class SlotPickerComponent {
   readonly selectedHasSlots = computed(() => this.groups().some((g) => g.slots.length > 0));
 
   pick(date: string) {
+    this.userPicked.set(true);
     this.selectedDate.set(date);
   }
 
