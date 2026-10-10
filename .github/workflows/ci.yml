@@ -68,3 +68,11 @@ jobs:
 
       - name: Cypress run
         run: npm run e2e:ci
+
+      - name: Upload Cypress screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore
